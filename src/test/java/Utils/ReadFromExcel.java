@@ -33,8 +33,14 @@ public class ReadFromExcel {
 
     static XSSFSheet loginTab=workbook.getSheet("LoginDetails");
 
-    public static String email=loginTab.getRow(1).getCell(0).getStringCellValue();
+   public static String email=loginTab.getRow(1).getCell(0).getStringCellValue();
     public static String password=loginTab.getRow(1).getCell(1).getStringCellValue();
+    public static String invalidpassword=loginTab.getRow(2).getCell(1).getStringCellValue();
+
+
+
+
+
 
 
 }

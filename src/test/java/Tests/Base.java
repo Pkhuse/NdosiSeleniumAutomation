@@ -1,6 +1,7 @@
 package Tests;
 
 import Pages.HomePage;
+import Pages.InventoryPage;
 import Pages.LoginPage;
 import Pages.RegistrationPage;
 import Utils.BrowserFactory;
@@ -15,6 +16,8 @@ public class Base {
     HomePage homePage= PageFactory.initElements(driver,HomePage.class);
     LoginPage loginPage= PageFactory.initElements(driver, LoginPage.class);
     RegistrationPage registrationPage= PageFactory.initElements(driver, RegistrationPage.class);
+    InventoryPage inventoryPage= PageFactory.initElements(driver, InventoryPage.class);
+
 
     TakesScreenshots takesScreenshots = new TakesScreenshots();
     ReadFromExcel readFromExcel;

@@ -9,7 +9,7 @@ public class FakerDataGenerator {
     public static String lastName = faker.name().lastName();
     public static String email = faker.internet().emailAddress();
     public static String password = faker.internet().password(8,16);
-    // public static String address = faker.address().cityName();
+    public static String address = faker.address().cityName();
 
 
     public String firstName() {

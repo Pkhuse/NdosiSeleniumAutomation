@@ -1,9 +1,11 @@
 package Pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
 import java.time.Duration;
 
@@ -41,10 +43,12 @@ public class LoginPage {
     }
     public void enterEmailAddress(String email){
         new WebDriverWait(driver, Duration.ofSeconds(10)).until(visibilityOf(emailfield_id));
+        emailfield_id.clear();
         emailfield_id.sendKeys(email);
     }
     public void enterPassword(String password){
         new WebDriverWait(driver, Duration.ofSeconds(10)).until(visibilityOf(passwordfield_id));
+        passwordfield_id.clear();
         passwordfield_id.sendKeys(password);
     }
 
@@ -54,12 +58,16 @@ public class LoginPage {
      }
      public void verifyWelcomeMessageIsDisplayed(){
          new WebDriverWait(driver, Duration.ofSeconds(10)).until(visibilityOf(welcomeMessage_id));
-         welcomeMessage_id.isDisplayed();
+         Assert.assertTrue(driver.findElement(By.id("practice-heading")).isDisplayed());
+         System.out.println(" " + welcomeMessage_id.getText());
+
+
      }
     public void clickLogOut(){
         new WebDriverWait(driver, Duration.ofSeconds(10)).until(visibilityOf(logoutbutton_id));
         logoutbutton_id.click();
     }
+
 
 
 
