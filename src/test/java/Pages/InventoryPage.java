@@ -63,6 +63,80 @@ public class InventoryPage {
     @FindBy(id = "subtotal-value")
     WebElement subtotal_value;
 
+    @FindBy(id = "shipping-option-express")
+    WebElement shippingexpress_button;
+
+    @FindBy(id = "warranty-option-2yr")
+    WebElement warrantyoption_button;
+
+    @FindBy(id = "discount-code")
+    WebElement discountcode_field;
+
+    @FindBy(id = "apply-discount-btn")
+    WebElement apply_button;
+
+    @FindBy(id = "discount-feedback")
+    WebElement discountcode_message;
+
+
+    @FindBy(id = "base-price-value")
+    private WebElement basePriceValue;
+
+    @FindBy(id = "breakdown-quantity-value")
+    private WebElement quantityValue;
+
+    @FindBy(id = "breakdown-subtotal-value")
+    private WebElement subtotalValue;
+
+    @FindBy(id = "breakdown-warranty-value")
+    private WebElement warrantyValue;
+
+    @FindBy(id = "breakdown-shipping-value")
+    private WebElement shippingValue;
+
+    @FindBy(id = "breakdown-discount-value")
+    private WebElement discountValue;
+
+    @FindBy(id = "breakdown-total-value")
+    private WebElement totalValue;
+
+    @FindBy(id = "add-to-cart-btn")
+    WebElement addToCart_button;
+
+    @FindBy(id = "cart-title")
+    WebElement carttitle_label;
+
+    @FindBy(id = "review-cart-btn")
+    WebElement reviewcart_button;
+
+    @FindBy(id="cancel-cart-btn")
+    WebElement cancel_button;
+
+    @FindBy(id="confirm-cart-btn")
+    WebElement confirm_button;
+
+    @FindBy(id="purchase-success-toast")
+    WebElement ordersuccess_screen;
+
+    @FindBy(id="view-history-btn")
+    WebElement viewhistory_button;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public void clickWebAutomationAdvanceTab() {
         webAutomationAdvance_tab.click();
     }
@@ -184,7 +258,7 @@ public class InventoryPage {
             wait.until(ExpectedConditions.textMatches(subtotalLocator, java.util.regex.Pattern.compile("R\\d")));
         }
 
-        // 🟢 Retrieve values
+        // Retrieve values
         String unit = unitprice_value.getText().trim();
         // remove the "Qty:" label from the text so it only returns the number
         String qtyLabel = quantity_label.getText().trim().replace("Qty:", "").trim();
@@ -193,7 +267,121 @@ public class InventoryPage {
         // 🟢 Return normalized values (no commas)
         return new String[]{unit.replace(",", ""), qtyLabel, subtotal.replace(",", "")};
     }
+// Shipping, Warranty, Discount Code methods
+    public void selectShippingExpress() {
+        new WebDriverWait(driver, Duration.ofSeconds(10)).until(visibilityOf(shippingexpress_button));
+        shippingexpress_button.click();
+    }
+    public void selectWarrantyOption() {
+        new WebDriverWait(driver, Duration.ofSeconds(10)).until(visibilityOf(warrantyoption_button));
+        warrantyoption_button.click();
+    }
+    public void enterDiscountCode(String discountCode) {
+        new WebDriverWait(driver, Duration.ofSeconds(10)).until(visibilityOf(discountcode_field));
+        discountcode_field.clear();
+        discountcode_field.sendKeys(discountCode);
+    }
+    public void clickApplyButton() {
+        new WebDriverWait(driver, Duration.ofSeconds(10)).until(visibilityOf(apply_button));
+        apply_button.click();
+    }
+    public void verifyDiscountMessage(String expectedMessage) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.visibilityOf(discountcode_message));
+        String actualMessage = discountcode_message.getText().trim();
+        Assert.assertEquals(actualMessage, expectedMessage, "Discount message mismatch!");
+        System.out.println(" "+ actualMessage);
+
+    }
+
+    public double getBasePrice() {
+        return Double.parseDouble(basePriceValue.getText().replace("R", "").trim());
+    }
+
+    public int getQuantity() {
+        return Integer.parseInt(quantityValue.getText().trim());
+    }
+
+    public double getWarranty() {
+        return Double.parseDouble(warrantyValue.getText().replace("R", "").trim());
+    }
+
+    public double getShipping() {
+        return Double.parseDouble(shippingValue.getText().replace("R", "").trim());
+    }
+
+    public double getDiscount() {
+        return Double.parseDouble(discountValue.getText().replace("- R", "").trim());
+    }
+
+    public double getTotal() {
+        return Double.parseDouble(totalValue.getText().replace("R", "").trim());
+    }
+    public void clickAddToCart() {
+        addToCart_button.click();
+    }
+    public void verifyCartTitle(String expectedCartText) {
+
+        new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOf(carttitle_label));
+
+        String actualText = carttitle_label.getText().trim();
+        Assert.assertEquals(actualText, expectedCartText, "Cart title mismatch!");
+        System.out.println("Verified cart title: " + actualText);
+    }
+    public void clickRemoveButtonByIndex(int index) {
+        String xpath = "(//button[starts-with(@id,'cart-item-remove-')])[" + index + "]";
+        WebElement removeButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.xpath(xpath)));
+        removeButton.click();
+        System.out.println("Removed item at position " + index);
+    }
+    public void clickReviewButton()
+    {
+        new WebDriverWait(driver, Duration.ofSeconds(10)).until(visibilityOf(reviewcart_button));
+        reviewcart_button.click();
+    }
+    public void clickCancelButton()
+    {
+        new WebDriverWait(driver, Duration.ofSeconds(10)).until(visibilityOf(cancel_button));
+        cancel_button.click();
+    }
+    public void clickConfirmButton()
+    {
+        new WebDriverWait(driver, Duration.ofSeconds(10)).until(visibilityOf(confirm_button));
+        confirm_button.click();
+    }
+    public void verifyOrderSuccessDetails() {
+        new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOf(ordersuccess_screen));
+
+        String popupText = ordersuccess_screen.getText();
+
+        Assert.assertTrue(popupText.contains("ORDER SUCCESSFUL"), "Missing success title");
+        Assert.assertTrue(popupText.contains("purchased successfully"), "Missing success message");
+        System.out.println("Order success details validated:\n" + popupText);
+    }
+    public void clickViewHistory()
+    {
+        new WebDriverWait(driver, Duration.ofSeconds(10)).until(visibilityOf(viewhistory_button));
+        viewhistory_button.click();
+    }
+    public void clickViewInvoiceButton() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        By viewButton = By.cssSelector("button[id^='view-invoice-INV-']");
+
+        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(viewButton));
+        button.click();
+        System.out.println("Clicked on the View Invoice button");
+    }
+
+
 }
+
+
+
+
+
 
 
 

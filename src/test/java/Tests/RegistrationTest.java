@@ -158,6 +158,11 @@ public class RegistrationTest extends Base {
 
     }
 
+    @AfterTest
+   public void closeBrowser() {
+     driver.quit();
+    }
+
 }
 
 

@@ -11,6 +11,7 @@ import org.openqa.selenium.Alert;
 
 import java.time.Duration;
 
+
 import static Utils.FakerDataGenerator.address;
 import TestData.PricingDataProvider;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
@@ -87,6 +88,7 @@ public class TestCases extends Base {
         takesScreenshots.takesSnapShot(driver, "Login Success Page with extra spaces");
 
     }
+
     //Inventory Page screen displayed
     @Test(priority = 7)
     public void verifyInventoryPageIsDisplayedTest() {
@@ -96,10 +98,10 @@ public class TestCases extends Base {
 
     //Pricing Panel Validation with multiple data sets
     @Test(priority = 8, dataProvider = "pricingData", dataProviderClass = PricingDataProvider.class)
-    public void verifyPricing(String device, String storage,String expectedUnit, String expectedSubtotal, String qtyValue) {
+    public void verifyPricing(String device, String storage, String expectedUnit, String expectedSubtotal, String qtyValue) {
 
 
-        String[] actualPricing = inventoryPage.selectPricingPanel(device,storage, qtyValue);
+        String[] actualPricing = inventoryPage.selectPricingPanel(device, storage, qtyValue);
 
         takesScreenshots.takesSnapShot(driver, "Clear Pricing Panel");
 
@@ -129,30 +131,131 @@ public class TestCases extends Base {
         System.out.println("✅ Subtotal: " + actualPricing[2]);
 
     }
-        @Test(priority = 9)
-        public void inventoryValidationTest()
-        {
 
-            inventoryPage.verifyNextButtonDisabledByDefault();
-            inventoryPage.selectDeviceType("Phone");
-            inventoryPage.selectBrand("Apple");
-            inventoryPage.clickStorage();
-            inventoryPage.selectColor("Gold");
-            inventoryPage.selectQuality("2");
-            inventoryPage.enterAddress(address);
-            inventoryPage.verifyPriceDetails();
-            takesScreenshots.takesSnapShot(driver, "Inventory Page Details");
-            inventoryPage.clickinventoryNextButton();
-        }
+    @Test(priority = 9)
+    public void inventoryValidationTest() {
+
+        inventoryPage.verifyNextButtonDisabledByDefault();
+        inventoryPage.selectDeviceType("Phone");
+        inventoryPage.selectBrand("Apple");
+        inventoryPage.clickStorage();
+        inventoryPage.selectColor("Gold");
+        inventoryPage.selectQuality("2");
+        inventoryPage.enterAddress(address);
+        inventoryPage.verifyPriceDetails();
+        takesScreenshots.takesSnapShot(driver, "Inventory Page Details");
+        inventoryPage.clickinventoryNextButton();
+    }
+
+    @Test(priority = 10)
+    public void validateDiscountCodeTest() {
+        //SAVE1O Apply Discount Code
+        inventoryPage.enterDiscountCode("SAVE10");
+        inventoryPage.clickApplyButton();
+        inventoryPage.verifyDiscountMessage("Code SAVE10 applied: -10%");
+        takesScreenshots.takesSnapShot(driver, "Discount Applied Page with SAVE10");
+
+        //SAVE20 Apply Discount Code
+
+        inventoryPage.enterDiscountCode("SAVE20");
+        inventoryPage.clickApplyButton();
+        inventoryPage.verifyDiscountMessage("Code SAVE20 applied: -20%");
+        takesScreenshots.takesSnapShot(driver, "Discount Applied Page with SAVE20");
+
+        //Invalid Discount
+
+        inventoryPage.enterDiscountCode("10");
+        inventoryPage.clickApplyButton();
+        inventoryPage.verifyDiscountMessage("Invalid code");
+        takesScreenshots.takesSnapShot(driver, "Invalid discount code");
+
+    }
+    @Test(priority = 11)
+    public void discountAndPricingTest(){
+        inventoryPage.selectShippingExpress();
+        inventoryPage.selectWarrantyOption();
+        inventoryPage.enterDiscountCode("SAVE10");
+        inventoryPage.clickApplyButton();
+        inventoryPage.verifyDiscountMessage("Code SAVE10 applied: -10%");
+
+        double basePrice = inventoryPage.getBasePrice();
+        int quantity = inventoryPage.getQuantity();
+        double warranty = inventoryPage.getWarranty();
+        double shipping = inventoryPage.getShipping();
+        double discount = inventoryPage.getDiscount();
+        double expectedSubtotal = (basePrice * quantity) + warranty + shipping;
+        double expectedTotal = expectedSubtotal - discount;
+
+        double actualTotal = inventoryPage.getTotal();
+
+        Assert.assertEquals(actualTotal, expectedTotal, 0.01, "❌ Total price mismatch!");
+        System.out.println("✅ Expected Total: " + expectedTotal + " | Actual Total: " + actualTotal);
+
+        inventoryPage.clickAddToCart();
+
+    }
+    @Test(priority = 12)
+    public void MutliItemCartTest()
+    {
+        inventoryPage.verifyCartTitle("Cart (1 item)");
+        inventoryPage.verifyNextButtonDisabledByDefault();
+        inventoryPage.selectDeviceType("Tablet");
+        inventoryPage.selectBrand("Samsung");
+        inventoryPage.clickStorage();
+        inventoryPage.selectColor("White");
+        inventoryPage.selectQuality("1");
+        inventoryPage.enterAddress(address);
+        inventoryPage.verifyPriceDetails();
+        takesScreenshots.takesSnapShot(driver, "Added Item Inventory Page Details");
+        inventoryPage.clickinventoryNextButton();
+        inventoryPage.clickAddToCart();
+        inventoryPage.verifyCartTitle("Cart (2 items)");
+        inventoryPage.clickRemoveButtonByIndex(2);
+        inventoryPage.clickRemoveButtonByIndex(1);
+        takesScreenshots.takesSnapShot(driver,"Cart Panel hidden");
+
+    }
+    @Test(priority = 13)
+    public void cartOrderTest()
+    {
+
+        inventoryPage.verifyNextButtonDisabledByDefault();
+        inventoryPage.selectDeviceType("Phone");
+        inventoryPage.selectBrand("Apple");
+        inventoryPage.clickStorage();
+        inventoryPage.selectColor("Gold");
+        inventoryPage.selectQuality("2");
+        inventoryPage.enterAddress(address);
+        inventoryPage.verifyPriceDetails();
+        takesScreenshots.takesSnapShot(driver, "Inventory Page Details");
+        inventoryPage.clickinventoryNextButton();
+        inventoryPage.clickAddToCart();
+        inventoryPage.verifyCartTitle("Cart (1 item)");
+        inventoryPage.clickReviewButton();
+
+        inventoryPage.clickCancelButton();
+        inventoryPage.clickReviewButton();
+
+        inventoryPage.clickConfirmButton();
+        inventoryPage.verifyOrderSuccessDetails();
+        inventoryPage.clickViewHistory();
+        inventoryPage.clickViewInvoiceButton();
+
 
 
     }
+    @AfterTest
+    public void closeBrowser() {
+        driver.quit();
+    }
 
 
-//    @AfterTest
-//    public void closeBrowser() {
-//        driver.quit();
-//    }
+}
+
+
+
+
+
 
 
 
